@@ -34,8 +34,9 @@
                 //validate inputted password with $user password
                 if($password == $user['user_password']){
                     //action after a successful login
-                    $_SESSION['success'] = 'User verification successful';
-                    print_r($user);
+                    // $_SESSION['success'] = 'User verification successful';
+                    $_SESSION['user'] = $user;
+                    header('location: homepage.php');
                 }
                 else{
                     //return the values to the user
@@ -43,7 +44,9 @@
                     $_SESSION['password'] = $password;
   
                     $_SESSION['error'] = 'Incorrect password';
+                    
                 echo "Incorrect password";
+                header('location: index.php');
 
                 }
   
@@ -55,6 +58,7 @@
   
                 $_SESSION['error'] = 'No account associated with the email';
                 echo "No account associated with the email";
+                header('location: index.php');
             }
   
         }

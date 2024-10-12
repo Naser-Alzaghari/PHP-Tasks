@@ -10,6 +10,7 @@ const password_doesnot_match_msg = document.getElementById('password_doesnot_mat
 const password_requirment_msg = document.getElementById("password_requirment");
 const email = document.querySelector(`input[type="email"]`);
 const email_requirment_msg = document.getElementById("email_requirment");
+
 signupBtn.onclick = (()=>{
   loginForm.style.marginLeft = "-50%";
   loginText.style.marginLeft = "-50%";
@@ -51,8 +52,7 @@ document.querySelector(`form[action="signup.php"]`).addEventListener("submit", (
         if(input_password.value == confirm_password.value){
             password_requirment_msg.classList.add("d-none");
             password_doesnot_match_msg.classList.add("d-none");
-            registerd_successfully();
-            alert("re");
+            
             
         } else {
             password_doesnot_match();
