@@ -69,3 +69,4 @@ document.querySelector(`form[action="signup.php"]`).addEventListener("submit", (
 
 }
 });
+
