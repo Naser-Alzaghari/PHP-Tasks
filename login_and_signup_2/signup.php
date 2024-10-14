@@ -11,7 +11,8 @@
     try{
         $stmt->execute();
         if($stmt->rowCount()==0){
-            $sql = "INSERT INTO `users`(`user_name`, `user_email`, `user_password`, `user_Mobile`, `user_birth_date`, `date_created`, `date_last_login`) VALUES ('$full_name','$email','$password','$mobile','$date_of_birth','$date','$date')";
+            $h_password = password_hash($password, PASSWORD_DEFAULT);
+            $sql = "INSERT INTO `users`(`user_name`, `user_email`, `user_password`, `user_Mobile`, `user_birth_date`, `date_created`, `date_last_login`) VALUES ('$full_name','$email','$h_password','$mobile','$date_of_birth','$date','$date')";
             $conn->exec($sql);
             echo "New record created successfully";
             $_SESSION['success']="New record created successfully";

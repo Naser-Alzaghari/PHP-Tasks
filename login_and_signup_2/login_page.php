@@ -66,6 +66,19 @@
                 </script>
             ";
         }
+        if(isset($_SESSION['email'])){
+            $e = $_SESSION['email'];
+            echo "
+                <script>
+                document.getElementById('exampleInputEmail1').setAttribute('value','$e');
+                </script>
+            ";
+            unset($_SESSION["email"]);
+            if(password_verify("Naser@1234", '$2y$10$F6l/pPNeNr1eGGyuDtEqLuy4XbrktyANOgK9vBoJF5y'))
+                echo "true";
+            else
+                echo "false";
+        } 
         unset($_SESSION["error"]);
     }
     ?>

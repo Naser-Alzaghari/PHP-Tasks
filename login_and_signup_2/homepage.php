@@ -31,11 +31,11 @@
                             <div class="row my-4">
                                 <div class="col-md-12">
                                     <div>
-                                        <p class="text-muted mb-2 fw-medium"><i class="mdi mdi-email-outline me-2"></i><?php echo $_SESSION["user"]["user_email"]; ?>
-                                        <p class="text-muted mb-2 fw-medium"><i class="mdi mdi-email-outline me-2"></i><?php echo $_SESSION["user"]["user_Mobile"]; ?>
-                                        <p class="text-muted mb-2 fw-medium"><i class="mdi mdi-email-outline me-2"></i><?php echo $_SESSION["user"]["user_birth_date"]; ?>
-                                        <p class="text-muted mb-2 fw-medium"><i class="mdi mdi-email-outline me-2"></i><?php echo $_SESSION["user"]["date_created"]; ?>
-                                        <p class="text-muted mb-2 fw-medium"><i class="mdi mdi-email-outline me-2"></i><?php echo $_SESSION["user"]["date_last_login"]; ?>
+                                        <p class="text-muted mb-2 fw-medium"><i class="mdi mdi-email-outline me-2"></i>Email: <?php echo $_SESSION["user"]["user_email"]; ?>
+                                        <p class="text-muted mb-2 fw-medium"><i class="mdi mdi-email-outline me-2"></i>Phone: <?php echo $_SESSION["user"]["user_Mobile"]; ?>
+                                        <p class="text-muted mb-2 fw-medium"><i class="mdi mdi-email-outline me-2"></i>Birthdate: <?php echo $_SESSION["user"]["user_birth_date"]; ?>
+                                        <p class="text-muted mb-2 fw-medium"><i class="mdi mdi-email-outline me-2"></i>Date Created: <?php echo $_SESSION["user"]["date_created"]; ?>
+                                        <p class="text-muted mb-2 fw-medium"><i class="mdi mdi-email-outline me-2"></i>Last Login: <?php echo $_SESSION["user"]["date_last_login"]; ?>
                                         </p>
                                         <a href="editpage.php" class="btn btn-primary">edit</a>
                                         <a href="logout.php" class="btn btn-danger">logout</a>

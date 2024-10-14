@@ -10,13 +10,15 @@
         $stmt->execute();
         if($stmt->rowCount()>0){
             $user = $stmt->fetch();
-            if($password == $user['user_password']){
+            echo "<script>alert('$password'); alert('".$user['user_password']."');</script>";
+            if(password_verify($password, $user['user_password'])){
                 $date = date("Y/m/d");
                 $id = $user['user_id'];
                 $conn->exec("UPDATE `users` SET `date_last_login`='$date' WHERE `user_id` = $id");
                 $user["date_last_login"]=$date;
                 $_SESSION['user']=$user;
-                if($user['user_id'] == 2){
+                $_SESSION['user_edit']=$user;
+                if($id == "2"){
                     header("location: admin.php");
                 }else {
                     header("location: homepage.php");
@@ -24,6 +26,7 @@
                 
             } else {
                 $_SESSION['error'] = "password is incorrect";
+                $_SESSION['email'] =  $email;
                 header("location: login_page.php");
             }
         } else {
