@@ -45,14 +45,15 @@
                             <div class="row my-4">
                                 <div class="col-md-12">
                                     <div>
-                                        <p class="text-muted mb-2 fw-medium"><i class="mdi mdi-email-outline me-2"></i><?php echo $_SESSION["user"]["user_email"]; ?>
-                                        <p class="text-muted mb-2 fw-medium"><i class="mdi mdi-email-outline me-2"></i><?php echo $_SESSION["user"]["user_Mobile"]; ?>
-                                        <p class="text-muted mb-2 fw-medium"><i class="mdi mdi-email-outline me-2"></i><?php echo $_SESSION["user"]["user_birth_date"]; ?>
-                                        <p class="text-muted mb-2 fw-medium"><i class="mdi mdi-email-outline me-2"></i><?php echo $_SESSION["user"]["date_created"]; ?>
-                                        <p class="text-muted mb-2 fw-medium"><i class="mdi mdi-email-outline me-2"></i><?php echo $_SESSION["user"]["date_last_login"]; ?>
+                                    <p class="text-muted mb-2 fw-medium"><i class="mdi mdi-email-outline me-2"></i>Email: <?php echo $_SESSION["user"]["user_email"]; ?>
+                                        <p class="text-muted mb-2 fw-medium"><i class="mdi mdi-email-outline me-2"></i>Phone: <?php echo $_SESSION["user"]["user_Mobile"]; ?>
+                                        <p class="text-muted mb-2 fw-medium"><i class="mdi mdi-email-outline me-2"></i>Birthdate: <?php echo $_SESSION["user"]["user_birth_date"]; ?>
+                                        <p class="text-muted mb-2 fw-medium"><i class="mdi mdi-email-outline me-2"></i>Date Created: <?php echo $_SESSION["user"]["date_created"]; ?>
+                                        <p class="text-muted mb-2 fw-medium"><i class="mdi mdi-email-outline me-2"></i>Last Login: <?php echo $_SESSION["user"]["date_last_login"]; ?>
                                         </p>
                                         <a href="editpage.php" class="btn btn-primary">edit</a>
                                         <a href="logout.php" class="btn btn-danger">logout</a>
+                                        <a href="deleteuser.php" class="btn btn-danger">delete user</a>
                                     </div>
                                 </div><!-- end col -->
                             </div><!-- end row -->
@@ -93,6 +94,7 @@
                             echo "<td>".$Row[$i]['user_birth_date']."</td>";
                             echo "<td>".$Row[$i]['date_created']."</td>";
                             echo "<td>".$Row[$i]['date_last_login']."</td>";
+                            
                             echo "<td name='user_email'><a href='editpage.php?id=".$Row[$i]['user_id']."' class='edit_button btn btn-primary'  button_Id='".$Row[$i]['user_id']."'>Edit</a></td>";
                             
                             echo "<td><a href='deleteuser.php?id=".$Row[$i]['user_id']."' class='delete_button' id='delete_button_".$Row[$i]['user_id']."'>delete</a></td>";
@@ -102,6 +104,88 @@
                     } catch(e){
 
                     }
+                    echo "<br><br>ADD ITEM";
+                    ?>
+                    <form class="row g-3 needs-validation" action="add_item.php" enctype="multipart/form-data" method="POST" novalidate>
+                        <div class="col-md-4">
+                            <label for="item_description" class="form-label">item_description</label>
+                            <input type="text" class="form-control" id="item_description" name="item_description" value="" required>
+                            <div class="valid-feedback">
+                            Looks good!
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="item_image" class="form-label">item_image</label>
+                            <input type="file" class="form-control" name="item_image" id="item_image" required>
+                            <div class="valid-feedback">
+                            Looks good!
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="item_total_number" class="form-label">item_total_number</label>
+                            <input type="text" class="form-control" name="item_total_number" id="item_total_number" value="" required>
+                            <div class="valid-feedback">
+                            Looks good!
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <button class="btn btn-primary" type="submit">Submit form</button>
+                        </div>
+                        </form>
+                        <?php
+                    $sql = "SELECT * FROM `items`";
+                    $stmt = $conn->query($sql);
+
+                    if($stmt->rowCount()>0){
+                        echo "<table class='my-3'><tr class='bg-primary'><td colspan=\"5\">items</td></tr>";
+                        foreach ($stmt as $item) {
+                            if(!$item['is_deleted']){
+                            echo "<tr>
+                            <td>{$item['item_description']}</td>
+                            <td style='width: 200px;'><img src='{$item['item_image']}' alt='' style='width: 100%;'></td>
+                            <td>{$item['item_total_number']}</td>
+                            <td style='width: 100px;'><a href='delete_item.php?id={$item['item_id']}' class='btn btn-danger')>delete</a></td>
+                            <td style='width: 100px;'><a href='edit_item_page.php?id={$item['item_id']}' class='btn btn-primary')>edit</a></td>
+                            </tr>";
+                            }
+                        }
+                        echo "</table>";
+                    }
+                    ?>
+
+                    
+
+
+                    <?php
+                    echo "<br><br>ORDERS";
+                    try {
+                        $sql_id="SELECT users.user_id, users.user_name FROM users join orders on users.user_id = orders.user_id GROUP by users.user_id";
+                        $ids = $conn->query($sql_id);
+                        if($ids->rowCount()>0){
+                            foreach($ids as $id){
+                                $s = "SELECT users.user_id, user_name, item_description, item_image, item_total_number, item_order_number FROM `users`
+                                JOIN orders ON users.user_id = orders.user_id
+                                JOIN items ON orders.item_id  = items.item_id
+                                where users.user_id = {$id['user_id']} ";
+                                $items = $conn->query($s);
+                                echo "<table class='my-3'><tr class='bg-danger'><td colspan=\"3\">Order for {$id['user_name']}</td></tr>";
+                                if($items->rowCount()>0){
+                                    foreach($items as $item){
+                                        echo "<tr><td>{$item['item_description']}</td><td style='width: 200px;'><img style='width: 100%;' src='{$item['item_image']}' alt=''></td><td style='width: 40px;'>{$item['item_order_number']}</td></tr>";
+                                        // print_r($order);
+                                        // echo "<br><br>";
+                                    }
+                                    echo "</table>";
+                                }
+                            }
+                        }
+                    }
+                        
+                        catch(e){
+
+                    }
+
+                    
                 ?>
            
     </div>
@@ -119,6 +203,8 @@
             
                 ?>
         }
+
+        
     </script>
 </body>
 </html>

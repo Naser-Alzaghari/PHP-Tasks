@@ -18,7 +18,7 @@
                 $user["date_last_login"]=$date;
                 $_SESSION['user']=$user;
                 $_SESSION['user_edit']=$user;
-                if($id == "2"){
+                if($user['is_admin']){
                     header("location: admin.php");
                 }else {
                     header("location: homepage.php");

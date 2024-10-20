@@ -36,7 +36,7 @@
       <div class="col-md-4">
         <label for="user_password" class="form-label">Password</label>
         <div class="input-group has-validation">
-          <input type="text" class="form-control" name="user_password" id="user_password" aria-describedby="inputGroupPrepend" value="<?php echo $_SESSION["user"]["user_password"]; ?>" required>
+          <input type="text" class="form-control" name="user_password" id="user_password" aria-describedby="inputGroupPrepend" value="" required>
           <div class="invalid-feedback">
             Please choose a username.
           </div>
@@ -69,12 +69,24 @@
           </div>
         </div>
       </div>
+      <div class="col-md-4 d-none" id="make_admin">
+        <label for="make_admin" class="form-label">make_admin</label>
+        <div class="input-group has-validation">
+          admin<input type="radio" name="make_admin" value="admin">
+          not admin<input type="radio" name="make_admin" value="not_admin" aria-describedby="inputGroupPrepend">
+          <div class="invalid-feedback">
+            Please choose a username.
+          </div>
+        </div>
+      </div>
       
 
       <div class="col-12">
         <button class="btn btn-primary" type="submit">Submit form</button>
+        
       </div>
     </form>
+    <button class="btn btn-secondary mt-3" onclick="history.back()">Back</button>
 </div>
   <?php
     if(isset($_GET['id'])){
@@ -93,6 +105,12 @@
         document.getElementById('user_password').setAttribute('value','');
         document.getElementById('user_Mobile').setAttribute('value','".$user['user_Mobile']."');
         document.getElementById('user_birth_date').setAttribute('value','".$user['user_birth_date']."');
+        document.getElementById('make_admin').classList.remove('d-none');
+        if(".$user['is_admin']."){
+          document.querySelector('input[value=\"admin\"]').setAttribute('checked','');
+        } else {
+          document.querySelector('input[value=\"not_admin\"]').setAttribute('checked','');
+        }
       </script>";
 
     }
