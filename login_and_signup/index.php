@@ -66,7 +66,7 @@
       </div>
     </div>
   <?php
-    print_r($_SESSION);
+    // print_r($_SESSION);
     if(isset($_SESSION['success'])){
       echo "
             <script>

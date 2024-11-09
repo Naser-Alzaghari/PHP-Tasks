@@ -1,0 +1,220 @@
+SELECT * FROM `students`
+
+/Q1
+SELECT COUNT(*) FROM `courses`;
+
+//Q2
+SELECT students.first_name
+FROM students
+JOIN enrollments ON students.student_id = enrollments.student_id
+JOIN courses ON enrollments.course_id = courses.course_id
+WHERE courses.course_name = 'Course Name';
+
+//Q3
+SELECT * FROM `students` INNER JOIN `enrollments` on students.student_id = enrollments.student_id
+INNER JOIN `courses` on enrollments.course_id = courses.course_id
+
+//Q4
+SELECT email FROM `instructors` INNER JOIN `department` 
+
+// Q5
+SELECT courses.name, COUNT(enrollments.student_id) AS number_of_students
+FROM courses
+JOIN enrollments ON courses.course_id = enrollments.course_id
+GROUP BY courses.name;
+
+// Q6
+SELECT students.name
+FROM students
+JOIN enrollments ON students.student_id = enrollments.student_id
+JOIN courses ON enrollments.course_id = courses.course_id
+WHERE enrollments.grade = 'A';
+
+
+//Q7
+SELECT courses.name, instructors.name AS instructor_name
+FROM courses
+JOIN instructors_courses ON courses.course_id = instructors_courses.course_id
+JOIN instructors ON instructors_courses.instructor_id = instructors.instructor_id
+WHERE instructors_courses.semester = 'Fall 2024'; -- Replace with the specific semester you're interested in.
+
+
+//Q8
+SELECT AVG(enrollments.grade) FROM enrollments
+
+
+//Q9
+SELECT * FROM students
+JOIN enrollments ON students.student_id = enrollments.student_id
+JOIN courses ON enrollments.course_id = courses.course_id
+WHERE enrollments.grade = '30';
+
+//Q10
+SELECT students.first_name, students.last_name, MAX(enrollments.grade) AS max_grade
+FROM students
+JOIN enrollments ON students.student_id = enrollments.student_id
+JOIN courses ON enrollments.course_id = courses.course_id
+GROUP BY students.first_name, students.last_name
+ORDER BY max_grade DESC
+LIMIT 1
+
+
+//Q11
+SELECT students.first_name, students.last_name, MAX(enrollments.grade) AS max_grade
+FROM students, enrollments
+
+
+//Q12
+SELECT departments.name AS department_name, COUNT(courses.course_id) AS course_count
+FROM departments
+JOIN courses ON departments.department_id = courses.department_id
+WHERE YEAR(courses.year_taught) = 2024  -- Replace 2024 with the current year
+GROUP BY departments.name
+ORDER BY course_count DESC
+LIMIT 1;
+
+
+//Q13
+SELECT courses.course_name
+FROM courses
+LEFT JOIN enrollments ON courses.course_id = enrollments.course_id
+WHERE enrollments.course_id IS NULL;
+
+
+//functions 
+//Q1
+DELIMITER $$
+
+CREATE FUNCTION calculate_age(date_of_birth DATE)
+RETURNS INT
+DETERMINISTIC
+BEGIN
+    DECLARE age INT;
+    SET age = TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE());
+    RETURN age;
+END $$
+
+DELIMITER ;
+
+//Q2
+DELIMITER $$
+
+CREATE PROCEDURE enroll_student(IN p_student_id INT, IN p_course_id INT, IN p_grade CHAR(2))
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM Enrollments WHERE student_id = p_student_id AND course_id = p_course_id) THEN
+        INSERT INTO Enrollments (student_id, course_id, grade)
+        VALUES (p_student_id, p_course_id, p_grade);
+    ELSE
+        UPDATE Enrollments
+        SET grade = p_grade
+        WHERE student_id = p_student_id AND course_id = p_course_id;
+    END IF;
+END $$
+
+DELIMITER ;
+
+//Q3
+SELECT c.department, AVG(CASE e.grade
+    WHEN 'A' THEN 4.0
+    WHEN 'B' THEN 3.0
+    WHEN 'C' THEN 2.0
+    WHEN 'D' THEN 1.0
+    WHEN 'F' THEN 0.0
+    ELSE NULL
+END) AS average_grade
+FROM Enrollments e
+JOIN Courses c ON e.course_id = c.course_id
+GROUP BY c.department;
+
+
+//Q1
+ALTER TABLE Students
+ADD CONSTRAINT unique_email UNIQUE (email);
+
+//Q2
+DELIMITER $$
+
+CREATE PROCEDURE enroll_student_with_capacity(IN p_student_id INT, IN p_course_id INT, IN p_grade CHAR(2))
+BEGIN
+    DECLARE enrolled_count INT;
+    DECLARE course_capacity INT;
+
+    START TRANSACTION;
+
+    SELECT COUNT(*) INTO enrolled_count
+    FROM Enrollments
+    WHERE course_id = p_course_id;
+
+    SELECT capacity INTO course_capacity
+    FROM Courses
+    WHERE course_id = p_course_id;
+
+    IF enrolled_count < course_capacity THEN
+        INSERT INTO Enrollments (student_id, course_id, grade)
+        VALUES (p_student_id, p_course_id, p_grade);
+        COMMIT;
+    ELSE
+        ROLLBACK;
+    END IF;
+
+END $$
+
+DELIMITER ;
+
+
+//Q1
+CREATE INDEX idx_course_code ON Courses(course_code);
+
+//Q2
+EXPLAIN 
+SELECT s.first_name, s.last_name 
+FROM Students s
+JOIN Enrollments e ON s.student_id = e.student_id
+WHERE e.course_id = 1;
+
+
+//Q1
+SELECT s.first_name, s.last_name, c.course_name 
+FROM Students s
+INNER JOIN Enrollments e ON s.student_id = e.student_id
+INNER JOIN Courses c ON e.course_id = c.course_id;
+
+//Q2
+SELECT i.first_name, i.last_name, c.course_name 
+FROM Instructors i
+LEFT JOIN Course_Assignments ca ON i.instructor_id = ca.instructor_id
+LEFT JOIN Courses c ON ca.course_id = c.course_id;
+
+//Q3
+SELECT first_name, last_name, 'Student' AS role 
+FROM Students
+UNION
+SELECT first_name, last_name, 'Instructor' AS role 
+FROM Instructors;
+
+
+
+-- Final Challenge: Generate a report showing each student's details, courses enrolled, instructor, grades, and total credits
+SELECT 
+    s.first_name AS student_first_name,
+    s.last_name AS student_last_name,
+    s.email,
+    s.major,
+    c.course_name,
+    CONCAT(i.first_name, ' ', i.last_name) AS instructor_name,
+    e.grade,
+    c.credits
+FROM 
+    Students s
+JOIN 
+    Enrollments e ON s.student_id = e.student_id
+JOIN 
+    Courses c ON e.course_id = c.course_id
+JOIN 
+    Course_Assignments ca ON c.course_id = ca.course_id
+JOIN 
+    Instructors i ON ca.instructor_id = i.instructor_id
+ORDER BY 
+    s.student_id, c.course_name;
+
+
